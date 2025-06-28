@@ -4,15 +4,15 @@ const redis = require("../util/redis");
 const ERROR_PREFIX = "In shop controller, ";
 const PRODUCT_LIST_CACHE_KEY = "product_list";
 
-exports.getProducts = (req, res, next) => {
+exports.getProducts = async (req, res, next) => {
   try {
     // Check Redis cache for product list
-    const cachedProducts = redis.get(PRODUCT_LIST_CACHE_KEY);
+    const cachedProducts = await redis.get(PRODUCT_LIST_CACHE_KEY);
 
     if (cachedProducts) {
       console.log("Cache hit for product list");
       const products = JSON.parse(cachedProducts);
-
+      console.log(products)
       return res.render("shop/product-list", {
         prods: products,
         pageTitle: "Products List",
@@ -22,8 +22,8 @@ exports.getProducts = (req, res, next) => {
     }
     console.log("Cache miss for product list");
 
-    const products = Product.findAll();
-    redis.set(PRODUCT_LIST_CACHE_KEY, JSON.stringify(products), "EX", 3600);
+    const products = await Product.findAll();
+    await redis.set(PRODUCT_LIST_CACHE_KEY, JSON.stringify(products), "EX", 3600);
 
     res.render("shop/product-list", {
       prods: products,
@@ -36,8 +36,6 @@ exports.getProducts = (req, res, next) => {
     console.log("In shop controller, fetchAll: {}", error);
   }
 };
-
-
 
 exports.getProduct = (req, res, next) => {
   const productId = req.params.productId;
