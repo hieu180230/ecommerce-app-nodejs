@@ -1,6 +1,6 @@
 const Redis = require("ioredis");
 
-const client = new Redis({
+const redis = new Redis({
   host: process.env.CACHE_REDIS,
   port: 6379,
   connectTimeout: 10000,
@@ -22,4 +22,4 @@ redis.on('close', () => {
   console.log('Redis connection closed');
 });
 
-module.exports = client
+module.exports = redis
