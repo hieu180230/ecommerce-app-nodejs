@@ -1,21 +1,40 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
-
+const redis = require("../util/redis");
 const ERROR_PREFIX = "In shop controller, ";
+const PRODUCT_LIST_CACHE_KEY = "product_list";
 
-exports.getProducts = (req, res, next) => {
-  Product.findAll()
-    .then((products) => {
-      res.render("shop/product-list", {
+exports.getProducts = async (req, res, next) => {
+  try {
+    // Check Redis cache for product list
+    const cachedProducts = await redis.get(PRODUCT_LIST_CACHE_KEY);
+
+    if (cachedProducts) {
+      console.log("Cache hit for product list");
+      const products = JSON.parse(cachedProducts);
+
+      return res.render("shop/product-list", {
         prods: products,
         pageTitle: "Products List",
         path: "/shop/product-list",
         hasProducts: products.length > 0,
       });
-    })
-    .catch((error) => {
-      console.log("In shop controller, fetchAll: {}", error);
+    }
+    console.log("Cache miss for product list");
+
+    const products = await Product.findAll();
+    await redis.set(PRODUCT_LIST_CACHE_KEY, JSON.stringify(products), "EX", 3600);
+
+    res.render("shop/product-list", {
+      prods: products,
+      pageTitle: "Products List",
+      path: "/shop/product-list",
+      hasProducts: products.length > 0,
     });
+  }
+  catch (error) {
+    console.log("In shop controller, fetchAll: {}", error);
+  }
 };
 
 exports.getProduct = (req, res, next) => {
@@ -91,7 +110,7 @@ exports.postCart = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch(error => console.log(error));
-  
+
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -112,7 +131,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-    .getOrders({include: ['products']})
+    .getOrders({ include: ['products'] })
     .then(orders => {
       res.render('shop/orders', {
         path: '/orders',
