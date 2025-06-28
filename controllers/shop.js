@@ -8,7 +8,7 @@ exports.getProducts = async (req, res, next) => {
   try {
     // Check Redis cache for product list
     const cachedProducts = await redis.get(PRODUCT_LIST_CACHE_KEY);
-    console.log(cachedProducts.length)
+    console.log(cachedProducts)
     if (cachedProducts.length > 0) {
       console.log("Cache hit for product list");
       const products = JSON.parse(cachedProducts);
