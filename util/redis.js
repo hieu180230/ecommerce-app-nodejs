@@ -6,12 +6,20 @@ const client = new Redis({
   connectTimeout: 10000,
 });
 
-client.on('connect', () => {
+redis.on('connect', () => {
   console.log('Connected to Redis');
 });
 
-client.on('error', (err) => {
+redis.on('ready', () => {
+  console.log('Redis connection is ready');
+});
+
+redis.on('error', (err) => {
   console.error('Redis error:', err);
+});
+
+redis.on('close', () => {
+  console.log('Redis connection closed');
 });
 
 module.exports = client
