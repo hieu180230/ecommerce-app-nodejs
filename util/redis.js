@@ -3,6 +3,7 @@ const Redis = require("ioredis");
 const client = new Redis({
   host: process.env.CACHE_REDIS,
   port: 6379,
+  connectTimeout: 10000,
 });
 
 client.on('connect', () => {
