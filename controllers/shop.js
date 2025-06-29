@@ -3,6 +3,7 @@ const Cart = require("../models/cart");
 const redis = require("../util/redis");
 const ERROR_PREFIX = "In shop controller, ";
 const PRODUCT_LIST_CACHE_KEY = "product_list";
+const LAMBDA = "https://q3jc35g140.execute-api.us-east-1.amazonaws.com/default/create-order";
 
 exports.getProducts = async (req, res, next) => {
   try {
@@ -157,6 +158,13 @@ exports.postOrder = (req, res, next) => {
           return order.addProducts(
             products.map(product => {
               product.orderItem = { quantity: product.cartItem.quantity };
+              const emailPayload = {
+                email: "test@gmail.com", // Assume user email is stored in req.user
+                p_name: product.dataValues.title, // Customize order details
+                p_price: product.dataValues.price,
+                p_quantity: product.cartItem.quantity,
+              };
+              console.log(emailPayload);
               return product;
             })
           );
@@ -167,8 +175,6 @@ exports.postOrder = (req, res, next) => {
       return fetchedCart.setProducts(null);
     })
     .then(async (result) => {
-      const lambda = "https://q3jc35g140.execute-api.us-east-1.amazonaws.com/default/create-order";
-      console.log(result);
       res.redirect('/orders');
     })
     .catch(err => console.log(err));
