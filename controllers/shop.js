@@ -157,7 +157,6 @@ exports.postOrder = (req, res, next) => {
           return order.addProducts(
             products.map(product => {
               product.orderItem = { quantity: product.cartItem.quantity };
-              console.log(product)
               return product;
             })
           );
@@ -167,7 +166,9 @@ exports.postOrder = (req, res, next) => {
     .then(result => {
       return fetchedCart.setProducts(null);
     })
-    .then(result => {
+    .then(async (result) => {
+      const lambda = "https://q3jc35g140.execute-api.us-east-1.amazonaws.com/default/create-order";
+      console.log(result);
       res.redirect('/orders');
     })
     .catch(err => console.log(err));
