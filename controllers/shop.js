@@ -165,6 +165,12 @@ exports.postOrder = (req, res, next) => {
                 p_quantity: product.cartItem.quantity,
               };
               console.log(emailPayload);
+              try {
+                axios.post(LAMBDA, emailPayload);
+                console.log('Order email notification sent');
+              } catch (err) {
+                console.error('Failed to send email notification:', err);
+              }
               return product;
             })
           );
