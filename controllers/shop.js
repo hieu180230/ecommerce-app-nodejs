@@ -1,6 +1,8 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const redis = require("../util/redis");
+const axios = require('axios');
+
 const ERROR_PREFIX = "In shop controller, ";
 const PRODUCT_LIST_CACHE_KEY = "product_list";
 const LAMBDA = "https://q3jc35g140.execute-api.us-east-1.amazonaws.com/default/create-order";
