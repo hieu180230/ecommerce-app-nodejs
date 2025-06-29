@@ -53,10 +53,13 @@ exports.getProduct = (req, res, next) => {
     .catch((error) => console.log("{} getProduct, {}", ERROR_PREFIX, error));
 };
 
-exports.getIndex = (req, res, next) => {
+exports.getIndex = async (req, res, next) => {
+  const response = await axios.get('https://d3gkg3w2sb3uli.cloudfront.net/navigation.ejs');
+  const navigation = response.data;
   Product.findAll()
     .then((products) => {
       res.render("shop/index", {
+        navigation,
         prods: products,
         pageTitle: "Shop",
         path: "/",
