@@ -162,9 +162,11 @@ exports.postOrder = (req, res, next) => {
               product.orderItem = { quantity: product.cartItem.quantity };
               const emailPayload = {
                 email: "test@gmail.com", // Assume user email is stored in req.user
-                p_name: product.dataValues.title, // Customize order details
-                p_price: product.dataValues.price,
-                p_quantity: product.cartItem.quantity,
+                data: {
+                  p_name: product.dataValues.title, // Customize order details
+                  p_price: product.dataValues.price,
+                  p_quantity: product.cartItem.quantity,
+                }
               };
               console.log(emailPayload);
               try {
